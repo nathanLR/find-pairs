@@ -1,12 +1,16 @@
 import { useState } from "react";
 import { flushSync } from "react-dom";
 import "../styles/Board.css";
+import { BoardSize } from "../types/Types";
 import Card from "./Card";
+
+const t: BoardSize = { row: 4, col: 5 };
+
 const Board = () => {
-  const [board, setBoard] = useState<number[][]>([
-    [1, 3, 2],
-    [2, 1, 3],
-  ]);
+  const [board] = useState<number[][]>(
+    new Array(t.row).fill("").map((cardsRow) => new Array(t.col).fill(0))
+  );
+
   const [cardsRevealed, setCardsRevealed] = useState<boolean[][]>(
     new Array(board.length)
       .fill("")

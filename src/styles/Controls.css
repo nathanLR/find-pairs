@@ -10,11 +10,14 @@ input {
   border-radius: 3px 0 0 3px;
   border: none;
 }
+input[name="col"] {
+  border-radius: 0;
+  border-left: 1px solid #ccc;
+}
 input::placeholder {
   font-style: italic;
 }
 input:focus {
-  border: none;
   outline: none;
 }
 .spanButton {

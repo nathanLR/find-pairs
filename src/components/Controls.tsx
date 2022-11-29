@@ -1,24 +1,40 @@
 import React, { ChangeEventHandler, useState } from "react";
 import "../styles/Controls.css";
+import { BoardSize } from "../types/Types";
 
-const Controls = ({ generate }: { generate: (x: number) => void }) => {
-  const [pairsNumber, setPairsNumber] = useState<number>(0);
+const Controls = ({ generate }: { generate: (size: BoardSize) => void }) => {
+  const [boardSize, setBoardSize] = useState<BoardSize>({ row: 0, col: 0 });
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPairsNumber(parseInt(event.target.value));
+    setBoardSize({
+      ...boardSize,
+      [event.target.name]:
+        parseInt(event.target.value) >= 0 ? parseInt(event.target.value) : 0,
+    });
   };
 
   return (
     <div className="control">
       <div className="input">
-        <input type="text" placeholder="20" onChange={handleInputChange} />
+        <input
+          type="number"
+          onChange={handleInputChange}
+          name="row"
+          value={boardSize.row}
+        />
+        <input
+          type="number"
+          onChange={handleInputChange}
+          name="col"
+          value={boardSize.col}
+        />
         <span
           className="spanButton"
           onClick={() => {
-            generate(pairsNumber);
+            generate(boardSize);
           }}
         >
-          Generate a board of {pairsNumber * 2} cards
+          Generate a board of {boardSize.row * boardSize.col} cards
         </span>
       </div>
       <span className="resetBoardButton">Reset Board</span>
