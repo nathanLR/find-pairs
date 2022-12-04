@@ -1,90 +1,26 @@
-import { useState } from "react";
-import { flushSync } from "react-dom";
 import "../styles/Board.css";
-import { BoardSize } from "../types/Types";
+
 import Card from "./Card";
 
-const t: BoardSize = { row: 4, col: 5 };
+type PropsType = {
+  boardValues: number[][];
+  boardState: boolean[][];
+  cardClickedHandler: (rPos: number, cPos: number) => void;
+};
 
-const Board = () => {
-  const [board] = useState<number[][]>(
-    new Array(t.row).fill("").map((cardsRow) => new Array(t.col).fill(0))
-  );
-
-  const [cardsRevealed, setCardsRevealed] = useState<boolean[][]>(
-    new Array(board.length)
-      .fill("")
-      .map((row) => new Array(board[0].length).fill(false))
-  );
-  const [firstOfTwo, setFirstOfTwo] = useState<{
-    row: number;
-    col: number;
-  } | null>(null);
-
-  const userHasWon = (): boolean => {
-    let hasWon = true;
-    let row = 0;
-    while (hasWon && row < cardsRevealed.length) {
-      for (let col = 0; col < cardsRevealed[row].length; col++) {
-        if (!cardsRevealed[row][col]) {
-          hasWon = false;
-        }
-      }
-      row++;
-    }
-    return hasWon;
-  };
-  const handleCardClic = (rowIndex: number, columnIndex: number): void => {
-    //if card is not already revealed =>
-    if (cardsRevealed[rowIndex][columnIndex] === false) {
-      // ===== reveal card clicked ====
-      const newCardsRevealedAfterClick = [...cardsRevealed];
-      newCardsRevealedAfterClick[rowIndex][columnIndex] = true;
-      setCardsRevealed(newCardsRevealedAfterClick);
-      // ================================
-      //if the card clicked is the first  of the pair =>
-      if (firstOfTwo === null) {
-        setFirstOfTwo({ row: rowIndex, col: columnIndex });
-      } else {
-        // we land here if a card has already been clicked
-        if (
-          board[firstOfTwo.row][firstOfTwo.col] === board[rowIndex][columnIndex]
-        ) {
-          // check if they match, if they do, do nothing (flush pair)
-          setFirstOfTwo(null);
-          console.log("pair found");
-        } else {
-          //if they dont, hide them after a delay
-
-          console.log("its not a pair");
-          setTimeout(() => {
-            const newCardsRevealedAfterSecondClick = [...cardsRevealed];
-            newCardsRevealedAfterSecondClick[firstOfTwo.row][firstOfTwo.col] =
-              false;
-            newCardsRevealedAfterSecondClick[rowIndex][columnIndex] = false;
-            setFirstOfTwo(null);
-            setCardsRevealed(newCardsRevealedAfterSecondClick);
-          }, 1000);
-        }
-      }
-      if (userHasWon()) {
-        setTimeout(() => {
-          alert("you won");
-        }, 500);
-      }
-    }
-  };
-
+const Board = ({ boardValues, boardState, cardClickedHandler }: PropsType) => {
   return (
     <div className="board">
-      {board.map((row, rowIndex) => (
+      {boardValues.map((row, rowIndex) => (
         <div className="row" key={rowIndex}>
-          {row.map((columnContent, columnIndex) => (
+          {row.map((card, colIndex) => (
             <Card
-              key={columnIndex}
-              number={columnContent}
-              onClick={() => handleCardClic(rowIndex, columnIndex)}
-              isRevealed={cardsRevealed[rowIndex][columnIndex]}
+              key={colIndex}
+              number={boardValues[rowIndex][colIndex]}
+              onClick={() => {
+                cardClickedHandler(rowIndex, colIndex);
+              }}
+              isRevealed={boardState[rowIndex][colIndex]}
             />
           ))}
         </div>
